@@ -77,13 +77,15 @@ extern int format_fd(int, const char *, ...);
 #define _PRINTVF(v,f,x...)   do {} while(0)
 #endif /* LINKER_DEBUG */
 
+#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+
 #define PRINT(x...)          _PRINTVF(-1, FALSE, x)
 #define INFO(x...)           _PRINTVF(0, TRUE, x)
 #define TRACE(x...)          _PRINTVF(1, TRUE, x)
 #define WARN(fmt,args...)    \
-        _PRINTVF(-1, TRUE, "%s:%d| WARNING: " fmt, __FILE__, __LINE__, ## args)
+        _PRINTVF(-1, TRUE, "%s:%d| WARNING: " fmt, __FILENAME__, __LINE__, ## args)
 #define ERROR(fmt,args...)    \
-        _PRINTVF(-1, TRUE, "%s:%d| ERROR: " fmt, __FILE__, __LINE__, ## args)
+        _PRINTVF(-1, TRUE, "%s:%d| ERROR: " fmt, __FILENAME__, __LINE__, ## args)
 
 
 #if TRACE_DEBUG

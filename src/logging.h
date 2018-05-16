@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -91,18 +93,18 @@ extern FILE *hybris_logging_target;
               if (hybris_logging_format() == HYBRIS_LOG_FORMAT_NORMAL) \
               { \
                 fprintf(hybris_logging_target, "%s %s:%d (%s) %s: " message "\n", \
-                       module, __FILE__, __LINE__, __PRETTY_FUNCTION__, \
+                       module, __FILENAME__, __LINE__, __PRETTY_FUNCTION__, \
                        #level + 11 /* + 11 = strip leading "HYBRIS_LOG_" */, \
                        ##__VA_ARGS__); \
                 fflush(hybris_logging_target); \
               } else if (hybris_logging_format() == HYBRIS_LOG_FORMAT_SYSTRACE) { \
                 fprintf(hybris_logging_target, "B|%i|%.9f|%s(%s) %s:%d (%s) " message "\n", \
-                      getpid(), hybris_get_thread_time(), module, __PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                      getpid(), hybris_get_thread_time(), module, __PRETTY_FUNCTION__, __FILENAME__, __LINE__, \
                       #level + 11 /* + 11 = strip leading "HYBRIS_LOG_" */, \
                       ##__VA_ARGS__); \
                 fflush(hybris_logging_target); \
                 fprintf(hybris_logging_target, "E|%i|%.9f|%s(%s) %s:%d (%s) " message "\n", \
-                      getpid(), hybris_get_thread_time(), module, __PRETTY_FUNCTION__, __FILE__, __LINE__, \
+                      getpid(), hybris_get_thread_time(), module, __PRETTY_FUNCTION__, __FILENAME__, __LINE__, \
                       #level + 11 /* + 11 = strip leading "HYBRIS_LOG_" */, \
                       ##__VA_ARGS__); \
                 fflush(hybris_logging_target); \
