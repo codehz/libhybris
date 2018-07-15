@@ -110,7 +110,9 @@ static void __attribute__((constructor)) __init_stack_check_guard() {
 
 static void *my_malloc(size_t size)
 {
-    return malloc(size);
+    void *ret = malloc(size);
+    memset(ret, 0, size);
+    return ret;
 }
 
 static void *my_memcpy(void *dst, const void *src, size_t len)
