@@ -403,9 +403,22 @@ static off_t my_ftello(struct aFILE* fp)
     return ftello(_get_actual_fp(fp));
 }
 
+static void (*record)(const void *ptr, size_t length);
+
+static size_t set_record(void (*r)(const void *ptr, size_t length)) {
+    record = r;
+}
+
 static size_t my_fwrite(const void *ptr, size_t size, size_t nmemb, struct aFILE* fp)
 {
-    return fwrite(ptr, size, nmemb, _get_actual_fp(fp));
+    FILE *f = _get_actual_fp(fp);
+    if (f == stdout) {
+        if (record) {
+            record(ptr, size * nmemb);
+        }
+        return size * nmemb;
+    }
+    return fwrite(ptr, size, nmemb, f);
 }
 
 static int my_getc(struct aFILE* fp)
@@ -423,10 +436,16 @@ static ssize_t my_getline(char **lineptr, size_t *n, struct aFILE* fp)
     return getline(lineptr, n, _get_actual_fp(fp));
 }
 
-
 static int my_putc(int c, struct aFILE* fp)
 {
-    return putc(c, _get_actual_fp(fp));
+    FILE *f = _get_actual_fp(fp);
+    if (f == stdout) {
+        if (record) {
+            record(&c, 1);
+        }
+        return c;
+    }
+    return putc(c, f);
 }
 
 static void my_rewind(struct aFILE* fp)
@@ -682,5 +701,6 @@ struct _hook io_hooks[] = {
     {"poll", poll},
 #endif
     {"select", select},
+    {"set_record", set_record},
     {NULL, NULL}
 };
