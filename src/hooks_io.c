@@ -314,7 +314,8 @@ static int my_ferror(struct aFILE* fp)
 
 static int my_fflush(struct aFILE* fp)
 {
-    return fflush(_get_actual_fp(fp));
+    // return fflush(_get_actual_fp(fp));
+    return 0;
 }
 
 static int my_fgetc(struct aFILE* fp)
